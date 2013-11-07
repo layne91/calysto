@@ -8,18 +8,29 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using FuncWorks.XNA.XTiled;
 
 namespace calysto_xna {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game {
+
+        const int WIDTH = 800;
+        const int HEIGHT = 480;
+        const string STARTING_MAP_NAME = "001_courtyard";
+
+        GameState currentGameState;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Player hector;
 
         public Game1() {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = WIDTH;
+            graphics.PreferredBackBufferHeight = HEIGHT;
             Content.RootDirectory = "Content";
+            
         }
 
         /// <summary>
@@ -29,8 +40,6 @@ namespace calysto_xna {
         /// and initialize them as well.
         /// </summary>
         protected override void Initialize() {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -39,10 +48,11 @@ namespace calysto_xna {
         /// all of your content.
         /// </summary>
         protected override void LoadContent() {
-            // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
+            Texture2D hectorSpriteSheet = Content.Load<Texture2D>("hector");
+            hector = new Player(hectorSpriteSheet, 3, 4, 16, 16, new Vector2(384, 224));//graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2
+            currentGameState = new MapState(Content, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight, STARTING_MAP_NAME, hector);
+            currentGameState.LoadContent();
         }
 
         /// <summary>
@@ -50,7 +60,7 @@ namespace calysto_xna {
         /// all content.
         /// </summary>
         protected override void UnloadContent() {
-            // TODO: Unload any non ContentManager content here
+            currentGameState.UnloadContent();
         }
 
         /// <summary>
@@ -59,12 +69,7 @@ namespace calysto_xna {
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime) {
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
-
-            // TODO: Add your update logic here
-
+            currentGameState.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -73,10 +78,8 @@ namespace calysto_xna {
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime) {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
-
+            GraphicsDevice.Clear(Color.Black);
+            currentGameState.Draw(gameTime, spriteBatch);
             base.Draw(gameTime);
         }
     }
