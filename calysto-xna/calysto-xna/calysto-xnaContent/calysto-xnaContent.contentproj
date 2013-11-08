@@ -158,15 +158,20 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="1024x1024_grid.png">
-      <Name>1024x1024_grid</Name>
+    <Compile Include="hector.png">
+      <Name>hector</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="hector.png">
-      <Name>hector</Name>
+    <Compile Include="collision.png">
+      <Name>collision</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="transition.png">
+      <Name>transition</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

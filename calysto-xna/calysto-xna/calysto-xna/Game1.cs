@@ -20,7 +20,7 @@ namespace calysto_xna {
         const int HEIGHT = 480;
         const string STARTING_MAP_NAME = "001_courtyard";
 
-        GameState currentGameState;
+        public static GameState currentGameState;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Player hector;

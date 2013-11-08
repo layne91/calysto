@@ -10,26 +10,64 @@ using FuncWorks.XNA.XTiled;
 namespace calysto_xna {
     class MapState : GameState {
 
+        private const int BACKGROUND_LAYER = 0;
+        private const int FOREGROUND_LAYER = 1;
+        private const int TOP_LAYER = 2;
+
         private Map map;
         private Rectangle mapView;
+        private Rectangle mapRect;
         private string mapName;
         private Player player;
+        private List<Rectangle> cRectangles;
+        private List<Transition> transitions;
 
-        //TESTING
-        private Texture2D grid;
-        private Vector2 gridPosition;
+        //Debug purposes
+        private Texture2D collision;
+        private Texture2D transition;
 
         public MapState(ContentManager Content, int PreferredBackBufferWidth, int PreferredBackBufferHeight, string mapName, Player player)
             : base(Content) {
-            this.mapView = new Rectangle(0, 0, PreferredBackBufferWidth, PreferredBackBufferWidth);
+            this.mapView = new Rectangle(0, 0, PreferredBackBufferWidth, PreferredBackBufferHeight);
             this.mapName = mapName;
             this.player = player;
         }
 
         public override void LoadContent() {
             map = Content.Load<Map>("maps/" + mapName);
-            grid = Content.Load<Texture2D>("1024x1024_grid");
-            gridPosition = new Vector2();
+            mapRect = new Rectangle(0, 0, map.Width * map.TileWidth, map.Height * map.TileHeight);
+            loadCollisionRectangles();
+            loadTransitionRectangles();
+
+            //Debug purposes
+            collision = Content.Load<Texture2D>("collision");
+            transition = Content.Load<Texture2D>("transition");
+        }
+
+        private void loadCollisionRectangles() {
+            cRectangles = new List<Rectangle>();
+            int tileSize = map.TileWidth / 2;   //Not sure why dividing by 2
+            foreach (TileData[] td in map.TileLayers[FOREGROUND_LAYER].Tiles) {
+                foreach (TileData t in td) {
+                    if (t != null) {
+                        //Console.WriteLine(t.Target);
+                        Rectangle cRect = t.Target;
+                        cRect.X -= tileSize;
+                        cRect.Y -= tileSize;
+                        cRectangles.Add(cRect);
+                    }
+                }
+            }
+        }
+
+        private void loadTransitionRectangles() {
+            transitions = new List<Transition>();
+            int tileSize = map.TileWidth / 2;   //Not sure why dividing by 2
+            foreach(MapObject mo in map.ObjectLayers["Transition"].MapObjects){
+                Rectangle tRect = mo.Bounds;
+                Transition t = new Transition(mo.Name, tRect);
+                transitions.Add(t);
+            }
         }
 
         public override void UnloadContent() {
@@ -37,51 +75,21 @@ namespace calysto_xna {
         }
 
         public override void Update(GameTime gameTime) {
-            player.Update(gameTime);
-            scrollMap(player.movementStatus);
-        }
-
-        private void scrollMap(MovementStatus movementStatus) {
-            Rectangle delta = mapView;
-            //for each, check collision on player
-            if (player.isMoving) {
-                switch (movementStatus) {
-                    case MovementStatus.Up:
-                        //gridPosition.Y -= player.spriteHeight;
-                        //delta.Y -= player.spriteHeight;
-                        //yChange -= player.spriteHeight;
-                        break;
-                    case MovementStatus.Down:
-                        //gridPosition.Y += player.spriteHeight;
-                        //delta.Y += player.spriteHeight;
-                        //yChange += player.spriteHeight;
-                        break;
-                    case MovementStatus.Left:
-                        //gridPosition.X -= player.spriteWidth;
-                        //delta.X -= player.spriteWidth;
-                        //xChange -= player.spriteHeight;
-                        break;
-                    case MovementStatus.Right:
-                        //gridPosition.X += player.spriteWidth;
-                        //delta.X += player.spriteWidth;
-                        //xChange += player.spriteHeight;
-                        break;
-                }
-            }
-            //if (map.Bounds.Contains(delta)) {
-            //mapView = delta;
-            //}
-            //mapView.X += xChange;
-            //mapView.Y += yChange;
-            //gridPosition.X += xChange;
-            //gridPosition.Y += yChange;
+            player.Update(gameTime, mapRect, ref mapView, ref cRectangles, ref transitions);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch batch) {
             batch.Begin();
-            map.Draw(batch, mapView, false);
-            //batch.Draw(grid, gridPosition, Color.White);
+            map.DrawLayer(batch, BACKGROUND_LAYER, mapView, 0);
+            map.DrawLayer(batch, FOREGROUND_LAYER, mapView, 0);
             player.Draw(batch, Color.White);
+            map.DrawLayer(batch, TOP_LAYER, mapView, 0);
+            foreach (Rectangle r in cRectangles) {
+                batch.Draw(collision, r, Color.White);
+            }
+            foreach (Transition t in transitions) {
+                batch.Draw(transition, t.tRect, Color.White);
+            }
             batch.End();
         }
     }
