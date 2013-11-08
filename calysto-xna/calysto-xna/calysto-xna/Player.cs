@@ -157,9 +157,7 @@ namespace calysto_xna {
         private void hitTransition(List<Transition> transitions, Rectangle mapView){
             foreach (Transition t in transitions) {
                 if (objectRectangle.Intersects(t.tRect)) {
-                    Console.WriteLine("loading next map: " + t.nextMapName);
-                    //load
-                    Game1.currentGameState = new MapState(Content, mapView.Width, mapView.Height, t.nextMapName, this);
+                    Game1.currentGameState = new MapState(Content, mapView.Width, mapView.Height, t.nextMapName, this, t);
                     break;
                 }
             }

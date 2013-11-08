@@ -15,7 +15,7 @@ namespace calysto_xna {
         protected int yNumberOfFrames;
         public int spriteWidth;
         public int spriteHeight;
-        protected Rectangle objectRectangle;
+        public Rectangle objectRectangle;
 
         //Testing
         private bool SIZE_16 = false;

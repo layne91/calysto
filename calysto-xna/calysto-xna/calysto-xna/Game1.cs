@@ -50,7 +50,7 @@ namespace calysto_xna {
         protected override void LoadContent() {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             Texture2D hectorSpriteSheet = Content.Load<Texture2D>("hector");
-            hector = new Player(hectorSpriteSheet, 3, 4, 16, 16, new Vector2(384, 224));//graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2
+            hector = new Player(hectorSpriteSheet, 3, 4, 16, 16, new Vector2(384, 224), Content);//graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2
             currentGameState = new MapState(Content, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight, STARTING_MAP_NAME, hector);
             currentGameState.LoadContent();
         }
